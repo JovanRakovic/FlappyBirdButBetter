@@ -11,7 +11,7 @@ clock = pygame.time.Clock()
 
 dt = .016 # DeltaTime, used to keep movement and animation time based, instead of frame-rate based as frame rate can vary.
 
-speed = 145
+speed = -145
 
 background = SlidingImage('images/background_temp.png',(0,-50),speed/5,.75)
 floor = SlidingImage('images/floor_temp.png',(0,670),speed,.7)

@@ -22,9 +22,7 @@ class SlidingImage:
         self._offset += self.speed * dt
         absOffset = abs(self._offset)
         if(absOffset >= self._width): # Loop the offset back around if it exceeds the width of the image
-            self._offset = absOffset%self._width * (self._offset / absOffset)
-            # offset / absOffset gives either a value of -1 or 1 based on the offset being negative or positive
-            # this allows for correct loop around of the offset value with the image going in either direction
+            self._offset = absOffset%self._width * (-1 if self._offset < 0 else 1) # Ternary operator used for correct loop around of value
 
     # The amount of times the image needs to be drawn to make the sliding seamless
     # Repeat values calculated for both sides of the image for efficiency

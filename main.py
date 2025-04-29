@@ -1,6 +1,7 @@
 import pygame
 from sys import exit
 from sliding_image import SlidingImage
+from bird import Bird
 
 # pygame setup
 pygame.init()
@@ -14,16 +15,24 @@ speed = 145
 
 background = SlidingImage('images/background_temp.png',(0,-50),speed/5,.75)
 floor = SlidingImage('images/floor_temp.png',(0,670),speed,.7)
-
+bird = Bird()
 while True:
     # poll for events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit() # Uninitilizes pygame
             exit()        # Exits the application without executing the code below
-
+        if event.type == pygame.KEYDOWN:  #Jumping method for the bird by clicking either space button or left mouse button
+            if event.key == pygame.K_SPACE:  #Space button click
+                bird.jump()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:  #Left mouse click
+                bird.jump()
     background.update(screen, dt)
     floor.update(screen, dt)
+
+    bird.update() #Executing the code meant for the bird to "fly"
+    screen.blit(bird.image, bird.rect) #
 
     # flip() the display to put your work on screen
     pygame.display.flip()

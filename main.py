@@ -8,6 +8,7 @@ pygame.init()
 screen = pygame.display.set_mode((1280, 720))
 pygame.display.set_caption('Flappy Bird')
 clock = pygame.time.Clock()
+font = pygame.font.Font(None, 60) #will be added in the meantime
 
 dt = .016 # DeltaTime, used to keep movement and animation time based, instead of frame-rate based as frame rate can vary.
 
@@ -16,14 +17,15 @@ speed = -145
 background = SlidingImage('images/background_temp.png',(0,-50),speed/5,.75)
 floor = SlidingImage('images/floor_temp.png',(0,670),speed,.7)
 
-# Reset button
-font = pygame.font.Font(None, 60) #will be added in the meantime
-button_text = font.render("Restart", True, "White")
+# Button
 button_rect = pygame.Rect(0, 0, 200, 80)
 button_rect.center = (screen.get_width() // 2, screen.get_height() // 2)
 
 bird = Bird() #Creating object with Bird class
-game_active = True #Setting the game state to active
+
+#Initializing the game states before loop
+game_active = False
+game_started = False
 
 while True:
     # poll for events
@@ -32,29 +34,42 @@ while True:
             pygame.quit() # Uninitilizes pygame
             exit()        # Exits the application without executing the code below
 
-        if game_active: #Checking if the game state is active
+        if not game_started:  # Starting the game for the first time
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                if button_rect.collidepoint(event.pos):
+                    bird.position_reset()
+                    game_started = True
+                    game_active = True
+
+        elif game_active: #If the game state is active, the code runs
             if event.type == pygame.KEYDOWN:  #Jumping method for the bird by clicking either space button or left mouse button
                 if event.key == pygame.K_SPACE:  #Space button click
                     bird.jump()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  #Left mouse click
                     bird.jump()
-        else:
+
+        elif not game_active: #if the game state is inactive, restart by clicking the button
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  # If we click with the left mouse click on the button, it resets the game state
                     if button_rect.collidepoint(event.pos): #If reset button is clicked, the game restarts
                         bird.position_reset()
                         game_active = True
 
-    if game_active: #Executes the code if the game state is active
-        background.update(screen, dt)
-        floor.update(screen, dt)
+    background.update(screen, dt)
+    floor.update(screen, dt)
+
+    if game_active and game_started: #Executes the code if the game state is "active" and "started"
         bird.update() #Executing the code meant for the bird to "fly"
         screen.blit(bird.image, bird.rect)
         if bird.is_dead(): #Checks if the bird state is alive, if it's not, puts the game in no active state
             game_active = False
-    else:
-        # Puts the reset button if the game is in no active state
+    elif not game_started: # Puts the start button on the screen, if the game is in inactive but started state
+        button_text = font.render("Start", True, "White")
+        pygame.draw.rect(screen, "gray", button_rect, border_radius=12)
+        screen.blit(button_text, button_text.get_rect(center=button_rect.center))
+    elif game_started and not game_active: #Puts the restart button on the screen, if the game is in inactive state
+        button_text = font.render("Restart", True, "White")
         pygame.draw.rect(screen, "gray", button_rect, border_radius=12)
         screen.blit(button_text, button_text.get_rect(center=button_rect.center))
 

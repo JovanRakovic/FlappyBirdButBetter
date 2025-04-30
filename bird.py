@@ -4,20 +4,16 @@ class Bird(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()# The bird inherits a class Sprite
         self.image = pygame.image.load('images/flappy-bird-image.png').convert_alpha()
-        self.image = pygame.transform.scale(self.image, (150, 150))
+        self.image = pygame.transform.rotozoom(self.image, 0, .15)
         self.rect = self.image.get_rect(center=(200, 300))
         self.gravity = 0
 
-    def update(self):
-        self.gravity += 1 #gravity for the bird
+    def update(self, dt):
+        self.gravity += 60 * dt #gravity for the bird
         self.rect.y += self.gravity
 
     def jump(self):
-        self.gravity = -15  #forces the bird to go down
-
-    # Bird's state
-    def is_dead(self):
-        return self.rect.top <= -50 or self.rect.bottom >= 700 #game over state when fall or go above the screen
+        self.gravity = -12  #forces the bird to go up
 
     # Reset the bird's position
     def position_reset(self):

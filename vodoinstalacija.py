@@ -47,6 +47,7 @@ class PVC:
     def _update_rects(self):
         # offset is used for animating the pipes without ever changing the base position
         # Ternary operator used to avoid the sin function and the equation within when amplitude is 0
+        # (sin()+1) *.5 shifts the sin return value from -1:1 to 0:1
         offset = self.amp * (sin(self._time*2*pi*self.freq)+1)*.5 if self.amp > 0 else 0
         # Set the pipe positions based on the gap height and the offset
         self.bottomRect.midtop = (self.position[0], self.position[1]+self.halfGap+offset)

@@ -4,6 +4,8 @@ from os.path import exists
 from sliding_image import SlidingImage
 from bird import Bird
 from vodoinstalacija import PVC
+from coin import Coin
+from random import randint
 
 # pygame setup
 pygame.init()
@@ -31,11 +33,11 @@ floor = SlidingImage('images/floor_temp.png',(0,670),0,.7)
 buttonImg = pygame.image.load('images/button_temp.png').convert_alpha()
 buttonImg = pygame.transform.scale(buttonImg, (200,80))
 
-# Button
+# Button rect size and positioning
 button_rect = pygame.Rect(0, 0, 200, 80)
 button_rect.center = (screen.get_width() // 2, screen.get_height() // 2)
 
-bird = Bird() # Creating object with Bird class
+bird = Bird(.132) # Creating object with Bird class
 
 # Distance between pipes ( from the middle of each pipe )
 pipeDis = 400
@@ -60,18 +62,33 @@ with open('score.txt','r') as f:
     highScore = int(temp) if temp != '' else 0
     del temp
 
+# Variables to be later used for rendering score and high score to the screen upon the end of the game loop
+highScoreText = scoreText = 0
+highScoreRect = scoreRect = 0
+
+# Variables for the start/restart button text
+# buttonText chnages its content based on the game state
+buttonText = textFont.render("Start", True, "White")
+buttonTextRect = buttonText.get_rect(center=button_rect.center)
+
+# Single coin that will be reused and moved every time it either reaches the end of the screen or is touched by the bird
+coin = Coin(.75,10,(-500,0))
+
 # Simple function to reduce repeating code
 # Sets the same speed to all elements ( other than the background )
 def set_speeds(speed):
     PVC.speed = speed
     floor.speed = speed
     background.speed = speed/5
+    coin.speed = speed
 
-highScoreText = scoreText = 0
-highScoreRect = scoreRect = 0
-
-buttonText = textFont.render("Start", True, "White")
-buttonTextRect = buttonText.get_rect(center=button_rect.center)
+def enter_game_loop():
+    bird.position_reset()
+    for i in range(len(pipework)):
+        pipework[i].position = (screen.get_width()+i*pipeDis+pipework[i].scale[0],0)
+        pipework[i].randomize()
+    coin.SetPosition((pipeDis * (randint(5,10) + .5) + pipework[checkPipe].position[0], 0), True)
+    set_speeds(speed)
 
 while True:
     # Poll for events
@@ -83,11 +100,7 @@ while True:
         if not gameState: # Starting the game for the first time
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if button_rect.collidepoint(event.pos):
-                    bird.position_reset()
-                    for i in range(len(pipework)):
-                        pipework[i].position = (screen.get_width()+i*pipeDis+pipework[i].scale[0],0)
-                        pipework[i].randomize()
-                    set_speeds(speed)
+                    enter_game_loop()
                     gameState = 1
 
         elif gameState == 1: # If the game state is active, the code runs
@@ -98,28 +111,24 @@ while True:
                 if event.button == 1: # Left mouse click
                     bird.jump()
 
-        elif gameState == -1: # if the game state is inactive, restart by clicking the button
+        else: # if the game state is inactive, restart by clicking the button
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:  # If we click with the left mouse click on the button, it resets the game state
                     if button_rect.collidepoint(event.pos): # If reset button is clicked, the game restarts
-                        bird.position_reset()
-                        gameState = 1
-                        set_speeds(speed)
-                        for i in range(len(pipework)):
-                            pipework[i].position = (screen.get_width()+i*pipeDis+pipework[i].scale[0],0)
-                            pipework[i].randomize()
+                        enter_game_loop()
                         score = 0
+                        gameState = 1
 
     # Update position of and draw the scrolling background and floor
     background.update(screen, dt)
 
     # Update all the pipes
     for pipe in pipework:
-        pipe.update(screen, dt if gameState == 1 else 0)
+        pipe.update(screen, dt if gameState == 1 else 0) # Send 0 instead of dt when not in game loop so the pipes won't move in start/restart screen
 
     if gameState == 1: # Executes the code if the game state is game loop
         bird.update(dt) # Executing the code meant for the bird to "fly"
-        if bird.rect.top < 0 or bird.rect.bottom > 670 or bird.rect.colliderect(pipework[boundsPipe].topRect) or bird.rect.colliderect(pipework[boundsPipe].bottomRect):
+        if bird.is_dead(colliders=[pipework[checkPipe].topRect, pipework[checkPipe].bottomRect]):
             gameState = -1
             boundsPipe = 0
             checkPipe = 0
@@ -140,11 +149,18 @@ while True:
             scoreRect = scoreText.get_rect(midtop = (screen.get_width()*.5, 70))
             highScoreRect = highScoreText.get_rect(midtop = (screen.get_width()*.5, scoreRect.bottom + 20))
         else:
-            if bird.rect.center[0] > pipework[checkPipe].position[0]:
+            if bird.rect.right > pipework[checkPipe].bottomRect.right:
                 checkPipe += 1
                 if checkPipe == len(pipework):
                     checkPipe = 0
                 score += 1
+
+            if bird.rect.colliderect(coin.rect):
+                coin.SetPosition((pipeDis * (randint(5,15) + .5) + pipework[checkPipe].position[0], 0), True)
+                score += 10
+            elif coin.rect.right < 0:
+                coin.SetPosition((pipeDis * (randint(5,15) + .5) + pipework[checkPipe].position[0], 0), True)
+
             scoreText = scoreFont.render(str(score), True, "White")
             screen.blit(scoreText, scoreText.get_rect(midtop=(screen.get_width()*.5,30))) # Renders the current score to the top of the screen
             # Check if the first pipe from left to right is out of bounds
@@ -160,12 +176,13 @@ while True:
     elif not gameState: # Puts the start button on the screen, if the game is in the start screen state
         screen.blit(buttonImg, button_rect)
         screen.blit(buttonText, buttonTextRect)
-    elif gameState == -1: # Puts the restart button and the score info text on the screen, if the game is in the game over screen state
+    else: # Puts the restart button and the score info text on the screen, if the game is in the game over screen state
         screen.blit(scoreText, scoreRect)
         screen.blit(highScoreText, highScoreRect)
         screen.blit(buttonImg, button_rect)
         screen.blit(buttonText, buttonText.get_rect(center=button_rect.center))
 
+    coin.update(screen, dt)
     screen.blit(bird.image, bird.rect)
     floor.update(screen, dt)
 

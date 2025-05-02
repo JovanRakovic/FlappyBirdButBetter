@@ -14,15 +14,17 @@ class SlidingImage:
 
     # Update the image offset and draw the duplciated + offset images to the screen
     def update(self, surf, dt):
-        for i in range(0,self._repeatsRight):
-            surf.blit(self.image, (self.position[0]+i*self._width+self._offset, self.position[1]))
-        for i in range(1,self._repeatsLeft): # we can skip the 0 index as it has been drawn in the loop above
-            surf.blit(self.image, (self.position[0]-i*self._width+self._offset, self.position[1]))
         # update the offset
         self._offset += self.speed * dt
         absOffset = abs(self._offset)
         if(absOffset >= self._width): # Loop the offset back around if it exceeds the width of the image
             self._offset = absOffset%self._width * (-1 if self._offset < 0 else 1) # Ternary operator used for correct loop around of value
+        
+        # Drawing the images on screen
+        for i in range(0,self._repeatsRight):
+            surf.blit(self.image, (self.position[0]+i*self._width+self._offset, self.position[1]))
+        for i in range(1,self._repeatsLeft): # we can skip the 0 index as it has been drawn in the loop above
+            surf.blit(self.image, (self.position[0]-i*self._width+self._offset, self.position[1]))
 
     # The amount of times the image needs to be drawn to make the sliding seamless
     # Repeat values calculated for both sides of the image for efficiency

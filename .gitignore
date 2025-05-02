@@ -175,3 +175,6 @@ cython_debug/
 /.vs
 
 score.txt
+dist/
+build/
+FlappyBird.exe

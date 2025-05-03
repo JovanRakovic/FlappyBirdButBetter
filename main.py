@@ -82,6 +82,7 @@ def set_speeds(speed):
     background.speed = speed/5
     coin.speed = speed
 
+# Function for setting the peramiters needed to start the game loop
 def enter_game_loop():
     bird.position_reset()
     for i in range(len(pipework)):
@@ -149,7 +150,7 @@ while True:
             scoreRect = scoreText.get_rect(midtop = (screen.get_width()*.5, 70))
             highScoreRect = highScoreText.get_rect(midtop = (screen.get_width()*.5, scoreRect.bottom + 20))
         else:
-            if bird.rect.right > pipework[checkPipe].bottomRect.right:
+            if bird.rect.left > pipework[checkPipe].bottomRect.right:
                 checkPipe += 1
                 if checkPipe == len(pipework):
                     checkPipe = 0

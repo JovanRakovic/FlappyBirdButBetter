@@ -18,7 +18,7 @@ class PVC:
         # Setup top and bottom pipe images
         self.bottomImg = pygame.image.load('images/pipe_temp.png').convert_alpha()
         self.bottomImg = pygame.transform.scale(self.bottomImg, scale)
-        self.topImg = pygame.transform.rotate(self.bottomImg, 180)
+        self.topImg = pygame.transform.flip(self.bottomImg, False, True)
 
         # Get rects for collision and positioning of top and bottom pipes
         self.bottomRect = self.bottomImg.get_rect()

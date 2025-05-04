@@ -7,7 +7,7 @@ from random import randint, random
 class PVC:
     speed = 0
 
-    def __init__(self, position, gap, amplitude=0, frequency=1, scale = (100,600)):
+    def __init__(self, position, gap, amplitude=0, frequency=1, scale = (125,870)):
         self.position = position
         self.halfGap = int(gap/2)
         self.amp = amplitude

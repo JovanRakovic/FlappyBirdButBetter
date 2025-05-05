@@ -9,7 +9,7 @@ from random import randint
 
 # pygame setup
 pygame.init()
-screen = pygame.display.set_mode((1280, 720))
+screen = pygame.display.set_mode((720, 720))
 pygame.display.set_caption('Flappy Bird')
 clock = pygame.time.Clock()
 textFont = pygame.font.Font('pixelated_elegance.ttf', 30) # Font for text

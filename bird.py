@@ -1,6 +1,7 @@
 import pygame
-
+pygame.init()
 class Bird(pygame.sprite.Sprite):
+    birdflap_sfx = pygame.mixer.Sound("./sfx/woosh.mp3")
     def __init__(self, scale = 1):
         super().__init__()# The bird inherits a class Sprite
         self.image = pygame.image.load('images/flappy-bird-image.png').convert_alpha()
@@ -17,6 +18,7 @@ class Bird(pygame.sprite.Sprite):
 
     def jump(self):
         self.gravity = -12  #forces the bird to go up
+        self.birdflap_sfx.play()
 
     # Reset the bird's position
     def position_reset(self):

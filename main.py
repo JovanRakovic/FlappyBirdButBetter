@@ -1,20 +1,25 @@
 import pygame
+import random
 from sys import exit
 from os.path import exists
 from sliding_image import SlidingImage
 from bird import Bird
 from vodoinstalacija import PVC
 from coin import Coin
+from sfx import SFX
 from random import randint
+
 
 # pygame setup
 pygame.init()
+pygame.mixer.init()
 screen = pygame.display.set_mode((720, 720))
 pygame.display.set_caption('Flappy Bird')
 clock = pygame.time.Clock()
 textFont = pygame.font.Font('pixelated_elegance.ttf', 30) # Font for text
 scoreFont = pygame.font.Font('pixelated_elegance.ttf', 90) # Font for the score displayed in the game loop
 endScoreFont = pygame.font.Font('pixelated_elegance.ttf', 130) # Font for the score displayed in the game loop
+birddeath_sfx = ["./sfx/death_1.mp3","./sfx/death_2.mp3","./sfx/death_3.mp3","./sfx/death_4.mp3"] # SFX
 
 #    | Game state
 #  0 : start screen
@@ -102,6 +107,11 @@ while True:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if button_rect.collidepoint(event.pos):
                     enter_game_loop()
+                    SFX.button.play().set_volume(0.5)
+                    pygame.mixer.music.load(random.choice(SFX.bg_music))
+                    pygame.mixer.music.play()
+                    pygame.mixer.music.set_volume(0.4)
+                    #random.choice(SFX.bg_music).play().set_volume(0.2)
                     gameState = 1
 
         elif gameState == 1: # If the game state is active, the code runs
@@ -117,6 +127,10 @@ while True:
                 if event.button == 1:  # If we click with the left mouse click on the button, it resets the game state
                     if button_rect.collidepoint(event.pos): # If reset button is clicked, the game restarts
                         enter_game_loop()
+                        SFX.button.play().set_volume(0.5)
+                        pygame.mixer.music.load(random.choice(SFX.bg_music))
+                        pygame.mixer.music.play()
+                        pygame.mixer.music.set_volume(0.3)
                         score = 0
                         gameState = 1
 
@@ -130,6 +144,7 @@ while True:
     if gameState == 1: # Executes the code if the game state is game loop
         bird.update(dt) # Executing the code meant for the bird to "fly"
         if bird.is_dead(colliders=[pipework[checkPipe].topRect, pipework[checkPipe].bottomRect]):
+            random.choice(SFX.bwawk).play()
             gameState = -1
             boundsPipe = 0
             checkPipe = 0
@@ -155,10 +170,12 @@ while True:
                 if checkPipe == len(pipework):
                     checkPipe = 0
                 score += 1
+                SFX.pipe_pass.play().set_volume(0.3)
 
             if bird.rect.colliderect(coin.rect):
                 coin.SetPosition((pipeDis * (randint(5,15) + .5) + pipework[checkPipe].position[0], 0), True)
                 score += 10
+                SFX.coin_collect.play().set_volume(0.5)
             elif coin.rect.right < 0:
                 coin.SetPosition((pipeDis * (randint(5,15) + .5) + pipework[checkPipe].position[0], 0), True)
 

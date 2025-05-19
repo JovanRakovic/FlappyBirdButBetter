@@ -19,7 +19,6 @@ clock = pygame.time.Clock()
 textFont = pygame.font.Font('pixelated_elegance.ttf', 30) # Font for text
 scoreFont = pygame.font.Font('pixelated_elegance.ttf', 90) # Font for the score displayed in the game loop
 endScoreFont = pygame.font.Font('pixelated_elegance.ttf', 130) # Font for the score displayed in the game loop
-birddeath_sfx = ["./sfx/death_1.mp3","./sfx/death_2.mp3","./sfx/death_3.mp3","./sfx/death_4.mp3"] # SFX
 
 #    | Game state
 #  0 : start screen

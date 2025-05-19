@@ -60,6 +60,8 @@ score = 0
 # Create a file for storing the high score if one doesn't exist
 if not exists('score.txt'):
     with open('score.txt','w') as f: pass
+if not exists('leaderboard.txt'):
+    with open('leaaderboard.txt', 'w') as f: pass
 
 # Read the previous high score from file and store it in a variable
 with open('score.txt','r') as f:
@@ -90,6 +92,10 @@ def set_speeds(speed):
 # Function for setting the peramiters needed to start the game loop
 def enter_game_loop():
     bird.position_reset()
+    SFX.button.play().set_volume(0.5)
+    pygame.mixer.music.load(random.choice(SFX.bg_music))
+    pygame.mixer.music.play()
+    pygame.mixer.music.set_volume(0.4)
     for i in range(len(pipework)):
         pipework[i].position = (screen.get_width()+i*pipeDis+pipework[i].scale[0],0)
         pipework[i].randomize()
@@ -107,10 +113,6 @@ while True:
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if button_rect.collidepoint(event.pos):
                     enter_game_loop()
-                    SFX.button.play().set_volume(0.5)
-                    pygame.mixer.music.load(random.choice(SFX.bg_music))
-                    pygame.mixer.music.play()
-                    pygame.mixer.music.set_volume(0.4)
                     #random.choice(SFX.bg_music).play().set_volume(0.2)
                     gameState = 1
 
@@ -127,10 +129,6 @@ while True:
                 if event.button == 1:  # If we click with the left mouse click on the button, it resets the game state
                     if button_rect.collidepoint(event.pos): # If reset button is clicked, the game restarts
                         enter_game_loop()
-                        SFX.button.play().set_volume(0.5)
-                        pygame.mixer.music.load(random.choice(SFX.bg_music))
-                        pygame.mixer.music.play()
-                        pygame.mixer.music.set_volume(0.3)
                         score = 0
                         gameState = 1
 

@@ -43,7 +43,7 @@ button_rect.center = (screen.get_width() // 2, screen.get_height() // 2)
 
 bird = Bird(.132) # Creating object with Bird class
 
-sfx = SFX()
+sfx = SFX() # Object with SFX class
 
 # Distance between pipes ( from the middle of each pipe )
 pipeDis = 400
@@ -93,11 +93,8 @@ def set_speeds(speed):
 # Function for setting the peramiters needed to start the game loop
 def enter_game_loop():
     bird.position_reset()
+    sfx.play_button()
     sfx.play_random_music()
-    # SFX.button.play().set_volume(0.5)
-    # pygame.mixer.music.load(random.choice(SFX.bg_music))
-    # pygame.mixer.music.play()
-    # pygame.mixer.music.set_volume(0.4)
     for i in range(len(pipework)):
         pipework[i].position = (screen.get_width()+i*pipeDis+pipework[i].scale[0],0)
         pipework[i].randomize()
@@ -170,7 +167,6 @@ while True:
                 if checkPipe == len(pipework):
                     checkPipe = 0
                 score += 1
-                #SFX.pipe_pass.play().set_volume(0.3)
                 sfx.play_pipe_pass()
 
             if bird.rect.colliderect(coin.rect):

@@ -1,6 +1,9 @@
 import pygame
-import sfx
+from sfx import SFX
 pygame.init()
+
+sfx = SFX()
+
 class Bird(pygame.sprite.Sprite):
     def __init__(self, scale = 1):
         super().__init__()# The bird inherits a class Sprite
@@ -18,7 +21,7 @@ class Bird(pygame.sprite.Sprite):
 
     def jump(self):
         self.gravity = -12  #forces the bird to go up
-        sfx.SFX.birdflap_sfx.play()
+        sfx.birdflap_sfx.play()
 
     # Reset the bird's position
     def position_reset(self):

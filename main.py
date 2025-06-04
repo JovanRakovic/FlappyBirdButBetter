@@ -43,6 +43,8 @@ button_rect.center = (screen.get_width() // 2, screen.get_height() // 2)
 
 bird = Bird(.132) # Creating object with Bird class
 
+sfx = SFX()
+
 # Distance between pipes ( from the middle of each pipe )
 pipeDis = 400
 # Pool the needed amount of pipes in a list
@@ -91,10 +93,11 @@ def set_speeds(speed):
 # Function for setting the peramiters needed to start the game loop
 def enter_game_loop():
     bird.position_reset()
-    SFX.button.play().set_volume(0.5)
-    pygame.mixer.music.load(random.choice(SFX.bg_music))
-    pygame.mixer.music.play()
-    pygame.mixer.music.set_volume(0.4)
+    sfx.play_random_music()
+    # SFX.button.play().set_volume(0.5)
+    # pygame.mixer.music.load(random.choice(SFX.bg_music))
+    # pygame.mixer.music.play()
+    # pygame.mixer.music.set_volume(0.4)
     for i in range(len(pipework)):
         pipework[i].position = (screen.get_width()+i*pipeDis+pipework[i].scale[0],0)
         pipework[i].randomize()
@@ -141,7 +144,7 @@ while True:
     if gameState == 1: # Executes the code if the game state is game loop
         bird.update(dt) # Executing the code meant for the bird to "fly"
         if bird.is_dead(colliders=[pipework[checkPipe].topRect, pipework[checkPipe].bottomRect]):
-            random.choice(SFX.bwawk).play()
+            sfx.play_random_death()
             gameState = -1
             boundsPipe = 0
             checkPipe = 0
@@ -167,12 +170,13 @@ while True:
                 if checkPipe == len(pipework):
                     checkPipe = 0
                 score += 1
-                SFX.pipe_pass.play().set_volume(0.3)
+                #SFX.pipe_pass.play().set_volume(0.3)
+                sfx.play_pipe_pass()
 
             if bird.rect.colliderect(coin.rect):
                 coin.SetPosition((pipeDis * (randint(5,15) + .5) + pipework[checkPipe].position[0], 0), True)
                 score += 10
-                SFX.coin_collect.play().set_volume(0.5)
+                sfx.play_coin_collect()
             elif coin.rect.right < 0:
                 coin.SetPosition((pipeDis * (randint(5,15) + .5) + pipework[checkPipe].position[0], 0), True)
 

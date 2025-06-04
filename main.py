@@ -19,6 +19,7 @@ clock = pygame.time.Clock()
 textFont = pygame.font.Font('pixelated_elegance.ttf', 30) # Font for text
 scoreFont = pygame.font.Font('pixelated_elegance.ttf', 90) # Font for the score displayed in the game loop
 endScoreFont = pygame.font.Font('pixelated_elegance.ttf', 130) # Font for the score displayed in the game loop
+inputFont = pygame.font.Font('pixelated_elegance.ttf', 25) #Font for the input box
 
 #    | Game state
 #  0 : start screen
@@ -57,17 +58,16 @@ checkPipe = 0
 
 # The current player score
 score = 0
+highScore = 0
 
-# Create a file for storing the high score if one doesn't exist
-if not exists('score.txt'):
-    with open('score.txt','w') as f: pass
+# Create a file for storing the leaderboard if one doesn't exist
 if not exists('leaderboard.txt'):
-    with open('leaaderboard.txt', 'w') as f: pass
+    with open('leaderboard.txt', 'w') as f: pass
 
-# Read the previous high score from file and store it in a variable
-with open('score.txt','r') as f:
-    temp = f.read()
-    highScore = int(temp) if temp != '' else 0
+# Read the leaderboard and store the players in a list
+with open('leaderboard.txt', 'r') as l:
+    temp = l.read()
+    leaderboard = temp.split(", ") if temp != '' else []
     del temp
 
 # Variables to be later used for rendering score and high score to the screen upon the end of the game loop
@@ -75,9 +75,15 @@ highScoreText = scoreText = 0
 highScoreRect = scoreRect = 0
 
 # Variables for the start/restart button text
+playerName = ''
+inputBoxActive = False 
 # buttonText chnages its content based on the game state
 buttonText = textFont.render("Start", True, "White")
 buttonTextRect = buttonText.get_rect(center=button_rect.center)
+leaderboardText = textFont.render('leaderboard: ' if leaderboard else '', True, 'Yellow')
+leaderboardRect = leaderboardText.get_rect(midtop = (screen.get_width()*.5, 50))
+inputBox = pygame.Rect(screen.get_width()*.5 - 150, 600, 300, 40)
+
 
 # Single coin that will be reused and moved every time it either reaches the end of the screen or is touched by the bird
 coin = Coin(.75,10,(-500,0))
@@ -101,19 +107,39 @@ def enter_game_loop():
     coin.SetPosition((pipeDis * (randint(5,10) + .5) + pipework[checkPipe].position[0], 0), True)
     set_speeds(speed)
 
+
 while True:
     # Poll for events
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT: #Saves and sorts the leaderboard right before uninitializing pygame
+            if highScore>0:
+                leaderboard.append(f"{playerName}: {highScore}")
+                leaderboard = sorted(leaderboard, key=lambda x: int(x.rsplit(' ', 1)[-1]), reverse=True)
+                with open('leaderboard.txt', 'w') as l:
+                    print(', '.join(leaderboard), file=l)
             pygame.quit() # Uninitilizes pygame
             exit()        # Exits the application without executing the code below
 
         if not gameState: # Starting the game for the first time
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 if button_rect.collidepoint(event.pos):
-                    enter_game_loop()
-                    #random.choice(SFX.bg_music).play().set_volume(0.2)
-                    gameState = 1
+                    if playerName: #Player name is needed before starting game
+                        enter_game_loop()
+                        gameState = 1
+                        inputBoxActive = False
+                elif inputBox.collidepoint(event.pos): #Inputting your name
+                    inputBoxActive = True
+            if event.type == pygame.KEYDOWN and inputBoxActive:
+                if event.key == pygame.K_RETURN:
+                    inputBoxActive = False
+                elif event.key == pygame.K_BACKSPACE:
+                    playerName = playerName[:-1]
+                elif len(playerName) < 6:
+                    playerName += event.unicode
+            pygame.draw.rect(screen, "Yellow", inputBox, 2)
+            nameText = textFont.render(playerName or "Enter your name", True, "Yellow")
+            
+                    
 
         elif gameState == 1: # If the game state is active, the code runs
             if event.type == pygame.KEYDOWN: # Jumping method for the bird by clicking either space button or left mouse button
@@ -149,8 +175,6 @@ while True:
 
             if highScore < score:
                 highScore = score
-                with open('score.txt','w') as f:
-                    print(highScore, file=f)
             
             # Setting up the text for both the restart button and the text showing the current score and new high score info
             buttonText = textFont.render("Restart", True, "White")
@@ -191,6 +215,15 @@ while True:
     elif not gameState: # Puts the start button on the screen, if the game is in the start screen state
         screen.blit(buttonImg, button_rect)
         screen.blit(buttonText, buttonTextRect)
+        screen.blit(leaderboardText, leaderboardRect)
+        screen.blit(nameText, (inputBox.x + 5, inputBox.y + 5))
+        line_spacing = 35
+        textpos = 100
+        for player in leaderboard[:5]:
+            playerText = textFont.render(player, True, "Yellow")
+            playerRect = playerText.get_rect(midtop = (screen.get_width()*.5, textpos))
+            screen.blit(playerText, playerRect)
+            textpos += line_spacing
     else: # Puts the restart button and the score info text on the screen, if the game is in the game over screen state
         screen.blit(scoreText, scoreRect)
         screen.blit(highScoreText, highScoreRect)

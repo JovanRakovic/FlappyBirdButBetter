@@ -1,9 +1,9 @@
 import pygame
 from sfx import SFX
-pygame.init()
 
 sfx = SFX()
 
+#Class containing all variables and functions related to the bird
 class Bird(pygame.sprite.Sprite):
     def __init__(self, scale = 1):
         super().__init__()# The bird inherits a class Sprite

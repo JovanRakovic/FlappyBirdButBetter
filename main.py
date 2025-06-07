@@ -1,5 +1,4 @@
 import pygame
-import random
 from sys import exit
 from os.path import exists
 from sliding_image import SlidingImage
@@ -8,7 +7,6 @@ from vodoinstalacija import PVC
 from coin import Coin
 from sfx import SFX
 from random import randint
-
 
 # pygame setup
 pygame.init()
@@ -66,10 +64,7 @@ if not exists('leaderboard.txt'):
 
 # Read the leaderboard and store the players in a list
 with open('leaderboard.txt', 'r') as l:
-    temp = l.read()
-    leaderboard = temp.split(", ") if temp != '' else []
-    del temp
-
+    leaderboard = l.readlines()
 # Variables to be later used for rendering score and high score to the screen upon the end of the game loop
 highScoreText = scoreText = 0
 highScoreRect = scoreRect = 0
@@ -111,12 +106,7 @@ def enter_game_loop():
 while True:
     # Poll for events
     for event in pygame.event.get():
-        if event.type == pygame.QUIT: #Saves and sorts the leaderboard right before uninitializing pygame
-            if highScore>0:
-                leaderboard.append(f"{playerName}: {highScore}")
-                leaderboard = sorted(leaderboard, key=lambda x: int(x.rsplit(' ', 1)[-1]), reverse=True)
-                with open('leaderboard.txt', 'w') as l:
-                    print(', '.join(leaderboard), file=l)
+        if event.type == pygame.QUIT:
             pygame.quit() # Uninitilizes pygame
             exit()        # Exits the application without executing the code below
 
@@ -136,10 +126,8 @@ while True:
                     playerName = playerName[:-1]
                 elif len(playerName) < 6:
                     playerName += event.unicode
-            pygame.draw.rect(screen, "Yellow", inputBox, 2)
+            #pygame.draw.rect(screen, "Yellow", inputBox, 2)
             nameText = textFont.render(playerName or "Enter your name", True, "Yellow")
-            
-                    
 
         elif gameState == 1: # If the game state is active, the code runs
             if event.type == pygame.KEYDOWN: # Jumping method for the bird by clicking either space button or left mouse button
@@ -185,6 +173,19 @@ while True:
             buttonTextRect = buttonText.get_rect(center = button_rect.center)
             scoreRect = scoreText.get_rect(midtop = (screen.get_width()*.5, 70))
             highScoreRect = highScoreText.get_rect(midtop = (screen.get_width()*.5, scoreRect.bottom + 20))
+
+            if highScore>0:
+                for line in leaderboard:
+                    if line[:line.index(":")-1].strip() == playerName.strip():
+                        if int(line[line.index(":")+1:]) < highScore:
+                            leaderboard[leaderboard.index(line)] = f"{playerName:<6}: {highScore:<4}"
+                        break
+                else:
+                    leaderboard.append(f"{playerName:<6}: {highScore:<4}")
+                leaderboard.sort(key = lambda l : int(''.join(l[l.index(":")+1:].split())), reverse=True )
+                with open('leaderboard.txt', 'w') as l:
+                    for line in leaderboard:
+                        print(line.strip(), file=l)
         else:
             if bird.rect.left > pipework[checkPipe].bottomRect.right:
                 checkPipe += 1

@@ -3,7 +3,6 @@ from math import sin, pi
 from random import randint, random
 
 # Class for flappy bird pipes
-
 class PVC:
     speed = 0
 

@@ -1,6 +1,7 @@
 import pygame
 from random import randint
 
+#Simple class regarding the coin object
 class Coin(pygame.sprite.Sprite):
     def __init__(self, scale = 1, animFrameRate = 6, position = (0,0), speed = 0):
         super().__init__()

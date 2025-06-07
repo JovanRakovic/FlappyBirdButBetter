@@ -1,7 +1,6 @@
 import pygame
 
 # Class for repeateing sliding images
-
 class SlidingImage:
     def __init__(self, imagePath, position, speed=0, scale=1):
         self.speed = speed

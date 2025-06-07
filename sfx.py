@@ -1,20 +1,19 @@
 import pygame
-from pygame import mixer
 from random import choice
-pygame.init()
 
+#Class for storing and playing music and sounds
 class SFX:
     def __init__(self):
-        self.death_one = pygame.mixer.Sound("./sfx/death_1.mp3")
-        self.death_two = pygame.mixer.Sound("./sfx/death_2.mp3")
-        self.death_three = pygame.mixer.Sound("./sfx/death_3.mp3")
-        self.death_four = pygame.mixer.Sound("./sfx/death_4.mp3")
+        pygame.mixer.init()
         self.button = pygame.mixer.Sound("./sfx/button.mp3")
         self.coin_collect = pygame.mixer.Sound("./sfx/coin.wav")
         self.pipe_pass = pygame.mixer.Sound("./sfx/pipe_pass.wav")
         self.birdflap_sfx = pygame.mixer.Sound("./sfx/woosh.mp3")
         self.bg_music = ["./sfx/song1.mp3", "./sfx/song2.mp3", "./sfx/song3.mp3"]
-        self.bwawk = [self.death_one, self.death_two, self.death_three, self.death_four]
+        self.bwawk =   [pygame.mixer.Sound("./sfx/death_1.mp3"),
+                        pygame.mixer.Sound("./sfx/death_2.mp3"),
+                        pygame.mixer.Sound("./sfx/death_3.mp3"),
+                        pygame.mixer.Sound("./sfx/death_4.mp3")]
 
     def play_button(self, volume=0.5):
         self.button.set_volume(volume)

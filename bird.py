@@ -21,6 +21,7 @@ class Bird(pygame.sprite.Sprite):
 
     def jump(self):
         self.gravity = -12  #forces the bird to go up
+        sfx.birdflap_sfx.set_volume(.4)
         sfx.birdflap_sfx.play()
 
     # Reset the bird's position

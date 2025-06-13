@@ -1,3 +1,3 @@
-Maryna Kolomiiets - kolomiiets-maryna
-Jovan Rakovic - JovanRakovic
+Maryna Kolomiiets - kolomiiets-maryna <br>
+Jovan Rakovic - JovanRakovic <br>
 Denis Kahari - Denis1232
